@@ -17,6 +17,15 @@ if (cluster.isMaster) {
   app.use("/api/places", placeModule.routes);
   app.use("/api/users", userModule.routes);
 
+  app.use((error, req, res, next) => {
+    if (res.headerSent) {
+      return next(error);
+    }
+
+    res.status(error.code || 5000);
+    res.json({ message: error.message || "An Unknown error occured" });
+  });
+
   app.listen(config.PORT, err => {
     if (err) {
       console.log(err);
