@@ -1,27 +1,47 @@
-const dummy_places = [
+const uuid = require("uuid/v4");
+
+const HttpError = require("../../library/helper/errorHandlers");
+
+const DUMMY_USERS = [
   {
     id: "u1",
-    title: "Lagos City",
-    description: "Beautiful Place in Lagos ",
-    imageUrl: "https://bantuphotos.com/watermark/water-mark-YhuocfMvn0.jpg",
-    address: "CMS Central Park, Marina Road, Lagos",
-    location: {
-      lat: 6.4509483,
-      lng: 3.3870513
-    },
-    creator: "u1"
+    name: "Famous",
+    email: "test@test.com",
+    password: "tester"
   }
 ];
 
-exports.landing = (req, res, next) => {
-  const userId = req.params.uid;
-  const place = dummy_places.find(p => {
-    return p.creator === userId;
-  });
+exports.getUsers = (req, res, next) => {
+  res.json({ users: DUMMY_USERS });
+};
 
-  if (!place) {
-    return res.status(404).json({ Message: "User doesnt exist" });
+exports.signup = (req, res, next) => {
+  const { name, email, password } = req.body;
+
+  const hasUser = DUMMY_USERS.find(u => u.email === email);
+
+  if (hasUser) {
+    throw HttpError("User already exist", 400);
+  }
+  const createUser = {
+    id: uuid(),
+    name,
+    password,
+    email
+  };
+  DUMMY_USERS.push(createUser);
+
+  res.status(201).json({ user: createUser });
+};
+
+exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  const identifiedUser = DUMMY_USERS.find(user => user.email === email);
+
+  if (!identifiedUser || identifiedUser.password !== password) {
+    throw new HttpError("could not identify user, credential is wrong", 401);
   }
 
-  res.json({ place });
+  res.json({ message: "Logged in" });
 };

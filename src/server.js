@@ -4,6 +4,7 @@ const os = require("os");
 const placeModule = require("./components").places;
 const userModule = require("./components").users;
 const config = require("./config");
+const HttpError = require("./library/helper/errorHandlers");
 
 cluster.schedulingPolicy = cluster.SCHED_RR;
 
@@ -17,12 +18,17 @@ if (cluster.isMaster) {
   app.use("/api/places", placeModule.routes);
   app.use("/api/users", userModule.routes);
 
+  app.use((req, res, next) => {
+    const error = new HttpError("could not find this route", 404);
+    throw error;
+  });
+
   app.use((error, req, res, next) => {
     if (res.headerSent) {
       return next(error);
     }
 
-    res.status(error.code || 5000);
+    res.status(error.code || 500);
     res.json({ message: error.message || "An Unknown error occured" });
   });
 
