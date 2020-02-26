@@ -31,3 +31,34 @@ exports.findById = async id => {
   }
   return place;
 };
+
+exports.placeByUserId = async id => {
+  const place = await Place.find({ creator: id });
+  if (place.length === 0) {
+    throw new HttpError("Place with user id not found", 404);
+  }
+  return place;
+};
+
+exports.updatePlace = async (id, data) => {
+  const place = await Place.findById(id);
+  if (!place) {
+    throw new HttpError("Place with id not found", 404);
+  }
+  place.title = data.title;
+  place.description = data.description;
+
+  await place.save();
+
+  return place;
+};
+
+exports.deletePlace = async id => {
+  const place = await Place.findById(id);
+  if (!place) {
+    throw new HttpError("Place with id not found", 404);
+  }
+
+  await Place.remove();
+  return "Place deleted";
+};
