@@ -5,6 +5,7 @@ const placeModule = require("./components").places;
 const userModule = require("./components").users;
 const config = require("./config");
 const HttpError = require("./library/helper/errorHandlers");
+const mongoose = require("mongoose");
 
 cluster.schedulingPolicy = cluster.SCHED_RR;
 
@@ -17,6 +18,14 @@ if (cluster.isMaster) {
 } else {
   app.use("/api/places", placeModule.routes);
   app.use("/api/users", userModule.routes);
+
+  mongoose
+    .connect("mongodb://127.0.0.1:27017/places", {
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+    })
+    .then(() => console.log("MongoDB is Connected"))
+    .catch(err => console.log(err));
 
   app.use((req, res, next) => {
     const error = new HttpError("could not find this route", 404);
