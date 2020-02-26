@@ -1,8 +1,7 @@
 const HttpError = require("../../library/helper/errorHandlers");
 const uuid = require("uuid/v4");
 const { validationResult } = require("express-validator");
-
-const getCoordsForAddress = require("../../library/helper/location");
+const placeService = require("./places.services");
 
 let dummy_places = [
   {
@@ -19,17 +18,19 @@ let dummy_places = [
   }
 ];
 
-exports.getPlace = (req, res, next) => {
+///////////////////////////////
+///// get place by placeid ////
+exports.getPlace = async (req, res, next) => {
   const placeId = req.params.pid;
 
-  const place = dummy_places.find(p => {
-    return p.id === placeId;
-  });
-  if (!place) {
-    throw new HttpError("could not find place for the provided ID", 404);
+  try {
+    const place = await placeService.findById(placeId);
+    res.json({ place });
+  } catch (err) {
+    console.log(err);
+    //const error = new HttpError("creating place failed, please try again", 500);
+    return next(err);
   }
-
-  res.json({ place });
 };
 
 exports.getPlacesByUserId = (req, res, next) => {
@@ -47,36 +48,33 @@ exports.getPlacesByUserId = (req, res, next) => {
   res.json({ places });
 };
 
+////////////////////////////////
+//////// create place /////////
 exports.createPlace = async (req, res, next) => {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return next(
       new HttpError("invalid input passed, please check your data", 422)
     );
   }
-  const { title, description, address, creator } = req.body;
-
-  let coordinates;
 
   try {
-    coordinates = await getCoordsForAddress(address);
-  } catch (error) {
-    console.log(error);
+    const { title, description, address, creator } = req.body;
+
+    const data = {
+      title,
+      description,
+      address,
+      creator
+    };
+
+    const place = await placeService.createPlace(data);
+    res.status(201).json({ place });
+  } catch (err) {
+    console.log(err);
+    const error = new HttpError("creating place failed, please try again", 500);
     return next(error);
   }
-
-  const createdPlace = {
-    id: uuid(),
-    title,
-    description,
-    location: coordinates,
-    address,
-    creator
-  };
-
-  dummy_places.push(createdPlace);
-  console.log(dummy_places);
-  res.status(201).json({ place: createdPlace });
 };
 
 exports.updatePlace = (req, res, next) => {
