@@ -3,21 +3,6 @@ const uuid = require("uuid/v4");
 const { validationResult } = require("express-validator");
 const placeService = require("./places.services");
 
-let dummy_places = [
-  {
-    id: "u1",
-    title: "Lagos City",
-    description: "Beautiful Place in Lagos ",
-    imageUrl: "https://bantuphotos.com/watermark/water-mark-YhuocfMvn0.jpg",
-    address: "CMS Central Park, Marina Road, Lagos",
-    location: {
-      lat: 6.4509483,
-      lng: 3.3870513
-    },
-    creator: "u1"
-  }
-];
-
 ///////////////////////////////
 ///// get place by placeid ////
 exports.getPlace = async (req, res, next) => {

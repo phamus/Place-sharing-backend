@@ -8,13 +8,13 @@ router.get("/", userController.getUsers);
 router.post(
   "/signUp",
   [
-    check("name")
+    check("name", "name is required")
       .not()
       .isEmpty(),
-    check("email")
+    check("email", "enter a valid email")
       .normalizeEmail()
       .isEmail(),
-    check("password").isLength({ max: 6 })
+    check("password", "enter a valid password").isLength({ min: 6 })
   ],
   userController.signup
 );

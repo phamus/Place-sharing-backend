@@ -1,12 +1,18 @@
 const Place = require("./place.model");
 const getCoordsForAddress = require("../../library/helper/location");
 const HttpError = require("../../library/helper/errorHandlers");
+const User = require("../user/user.model");
+const mongoose = require("mongoose");
 
 exports.createPlace = async data => {
   const { title, description, address, creator } = data;
-  let coordinates;
 
-  coordinates = await getCoordsForAddress(address);
+  let user = await User.findById(creator);
+  if (!user) {
+    throw new HttpError("Could not find user with the provided id", 404);
+  }
+
+  let coordinates = await getCoordsForAddress(address);
   const place = new Place({
     title,
     description,
@@ -18,6 +24,8 @@ exports.createPlace = async data => {
   });
 
   await place.save();
+  user.places.push(place._id);
+  await user.save();
 
   return place;
 };
@@ -27,7 +35,7 @@ exports.createPlace = async data => {
 exports.findById = async id => {
   const place = await Place.findById(id);
   if (!place) {
-    throw new HttpError("Place with id not found", 404);
+    throw new HttpError("Place not found", 404);
   }
   return place;
 };
@@ -43,7 +51,7 @@ exports.placeByUserId = async id => {
 exports.updatePlace = async (id, data) => {
   const place = await Place.findById(id);
   if (!place) {
-    throw new HttpError("Place with id not found", 404);
+    throw new HttpError("Place not found", 404);
   }
   place.title = data.title;
   place.description = data.description;
@@ -56,7 +64,7 @@ exports.updatePlace = async (id, data) => {
 exports.deletePlace = async id => {
   const place = await Place.findById(id);
   if (!place) {
-    throw new HttpError("Place with id not found", 404);
+    throw new HttpError("Place not found", 404);
   }
 
   await Place.remove();

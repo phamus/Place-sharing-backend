@@ -22,7 +22,9 @@ if (cluster.isMaster) {
   mongoose
     .connect("mongodb://127.0.0.1:27017/places", {
       useUnifiedTopology: true,
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      retryWrites: false
     })
     .then(() => console.log("MongoDB is Connected"))
     .catch(err => console.log(err));
