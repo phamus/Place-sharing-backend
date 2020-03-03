@@ -54,10 +54,8 @@ exports.createPlace = async (req, res, next) => {
 
     const place = await placeService.createPlace(data);
     res.status(201).json({ place });
-  } catch (err) {
-    console.log(err);
-    const error = new HttpError("creating place failed, please try again", 500);
-    return next(error);
+  } catch (error) {
+    res.json({ message: error.message });
   }
 };
 

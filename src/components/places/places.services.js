@@ -62,11 +62,13 @@ exports.updatePlace = async (id, data) => {
 };
 
 exports.deletePlace = async id => {
-  const place = await Place.findById(id);
+  const place = await Place.findById(id).populate("creator");
   if (!place) {
     throw new HttpError("Place not found", 404);
   }
 
   await Place.remove();
+  place.creator.places.pull(place._id);
+  await place.creator.save();
   return "Place deleted";
 };
