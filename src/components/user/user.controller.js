@@ -1,5 +1,3 @@
-const uuid = require("uuid/v4");
-
 const HttpError = require("../../library/helper/errorHandlers");
 
 const { validationResult } = require("express-validator");

@@ -11,10 +11,8 @@ exports.getPlace = async (req, res, next) => {
   try {
     const place = await placeService.findById(placeId);
     res.json({ place: place.toObject({ getters: true }) });
-  } catch (err) {
-    console.log(err);
-    //const error = new HttpError("creating place failed, please try again", 500);
-    return next(err);
+  } catch (error) {
+    res.json({ message: error.message });
   }
 };
 
@@ -27,10 +25,8 @@ exports.getPlacesByUserId = async (req, res, next) => {
         place.toObject({ getters: true })
       )
     });
-  } catch (err) {
-    console.log(err);
-    //const error = new HttpError("creating place failed, please try again", 500);
-    return next(err);
+  } catch (error) {
+    res.json({ message: error.message });
   }
 };
 
@@ -77,13 +73,8 @@ exports.updatePlace = async (req, res, next) => {
       description
     });
     res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
-  } catch (err) {
-    console.log(err);
-    const error = new HttpError(
-      "something went wrong udpating place with the id",
-      500
-    );
-    return next(error);
+  } catch (error) {
+    res.json({ message: error.message });
   }
 };
 
@@ -92,12 +83,7 @@ exports.deletePlace = async (req, res, next) => {
   try {
     await placeService.deletePlace(placeId);
     res.status(200).json({ message: "Deleted Place" });
-  } catch (err) {
-    console.log(err);
-    const error = new HttpError(
-      "something went wrong udpating place with the id",
-      500
-    );
-    return next(error);
+  } catch (error) {
+    res.json({ message: error.message });
   }
 };
