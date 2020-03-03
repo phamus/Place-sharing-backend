@@ -21,9 +21,11 @@ exports.getPlace = async (req, res, next) => {
 exports.getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
   try {
-    const places = await placeService.placeByUserId(userId);
+    const userWithPlaces = await placeService.placeByUserId(userId);
     res.json({
-      places: places.map(place => place.toObject({ getters: true }))
+      places: userWithPlaces.places.map(place =>
+        place.toObject({ getters: true })
+      )
     });
   } catch (err) {
     console.log(err);

@@ -41,11 +41,12 @@ exports.findById = async id => {
 };
 
 exports.placeByUserId = async id => {
-  const place = await Place.find({ creator: id });
-  if (place.length === 0) {
+  const userWithPlaces = await User.findById(id).populate("places");
+
+  if (!userWithPlaces || userWithPlaces.places.length === 0) {
     throw new HttpError("Place with user id not found", 404);
   }
-  return place;
+  return userWithPlaces;
 };
 
 exports.updatePlace = async (id, data) => {
