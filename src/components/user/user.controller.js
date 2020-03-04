@@ -54,6 +54,6 @@ exports.login = async (req, res, next) => {
     const user = await userService.authenticateUser({ email, password });
     res.status(201).json({ user: user.toObject({ getters: true }) });
   } catch (error) {
-    res.json({ message: error.message });
+    return next(new HttpError(error.message, 422));
   }
 };

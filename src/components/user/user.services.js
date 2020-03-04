@@ -30,7 +30,7 @@ exports.authenticateUser = async data => {
   }
 
   if (user.password !== password) {
-    throw new HttpError("Invalis credentials", 401);
+    throw new HttpError("Invalid credentials", 401);
   }
 
   return user;
