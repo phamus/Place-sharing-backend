@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 exports.createPlace = async data => {
   const { title, description, address, creator } = data;
+  console.log(data);
 
   let user = await User.findById(creator);
   if (!user) {
@@ -68,7 +69,7 @@ exports.deletePlace = async id => {
     throw new HttpError("Place not found", 404);
   }
 
-  await Place.remove();
+  await Place.deleteOne();
   place.creator.places.pull(place._id);
   await place.creator.save();
   return "Place deleted";
