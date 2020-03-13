@@ -37,6 +37,8 @@ exports.signup = async (req, res, next) => {
       email,
       password
     });
+
+    console.log(createduser);
     res.status(201).json({ user: createduser.toObject({ getters: true }) });
   } catch (error) {
     res.json({ message: error.message });

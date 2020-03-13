@@ -1,6 +1,7 @@
 const User = require("./user.model");
 const HttpError = require("../../library/helper/errorHandlers");
 const bcrypt = require("bcryptjs");
+const generateToken = require("../../library/helper");
 
 exports.signUp = async data => {
   const { email, name, password } = data;
@@ -16,8 +17,10 @@ exports.signUp = async data => {
     places: []
   });
 
+  const token = await generateToken(user.id, email);
+
   await user.save();
-  return user;
+  return { user, token };
 };
 
 exports.findUserByEmail = async email => {
