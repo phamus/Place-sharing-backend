@@ -3,8 +3,13 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 
 const app = express();
-app.use(morgan("dev"));
-app.use(bodyParser.json({ limit: "2mb" }));
-app.use(bodyParser.urlencoded({ limit: "2mb", extended: true }));
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 
+app.use(morgan("dev"));
 module.exports = app;

@@ -8,7 +8,7 @@ router.get("/", userController.getUsers);
 
 router.post(
   "/signUp",
-  fileUpload.single("image"),
+  // fileUpload.single("image"),
   [
     check("name", "name is required")
       .not()

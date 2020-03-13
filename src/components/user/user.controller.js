@@ -23,6 +23,8 @@ exports.signup = async (req, res, next) => {
       new HttpError("invalid input passed, please check your data", 422)
     );
   }
+  console.log(req.body);
+
   const { name, email, password } = req.body;
 
   try {
@@ -44,8 +46,9 @@ exports.signup = async (req, res, next) => {
 /////////////////////////
 ///// Login Users //////
 exports.login = async (req, res, next) => {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
+  console.log(req.body);
+  const error = validationResult(req).array();
+  if (error.length > 0) {
     throw new HttpError("invalid input passed, please check your data", 422);
   }
 

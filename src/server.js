@@ -6,7 +6,8 @@ const userModule = require("./components").users;
 const config = require("./config");
 const HttpError = require("./library/helper/errorHandlers");
 const mongoose = require("mongoose");
-
+const fs = require("fs");
+const cors = require("cors");
 cluster.schedulingPolicy = cluster.SCHED_RR;
 
 if (cluster.isMaster) {
@@ -16,19 +17,7 @@ if (cluster.isMaster) {
     cluster.fork();
   }
 } else {
-  app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-    );
-
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "OPTIONS,GET,POST,PATCH,DELETE"
-    );
-    next();
-  });
+  app.use(cors());
 
   app.use("/api/places", placeModule.routes);
   app.use("/api/users", userModule.routes);
@@ -49,6 +38,12 @@ if (cluster.isMaster) {
   });
 
   app.use((error, req, res, next) => {
+    if (req.file) {
+      fs.unlink(req.file.path, err => {
+        console.log(err);
+      });
+    }
+
     if (res.headerSent) {
       return next(error);
     }
