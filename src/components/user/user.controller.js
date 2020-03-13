@@ -1,5 +1,7 @@
 const HttpError = require("../../library/helper/errorHandlers");
 
+const generateToken = require("../../library/helper/generateToken");
+
 const { validationResult } = require("express-validator");
 
 const userService = require("./user.services");
@@ -38,8 +40,11 @@ exports.signup = async (req, res, next) => {
       password
     });
 
-    console.log(createduser);
-    res.status(201).json({ user: createduser.toObject({ getters: true }) });
+    const token = await generateToken(createduser.id, createduser.email);
+
+    res
+      .status(201)
+      .json({ user: createduser.toObject({ getters: true }), token });
   } catch (error) {
     res.json({ message: error.message });
   }
@@ -57,7 +62,12 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await userService.authenticateUser({ email, password });
-    res.status(201).json({ user: user.toObject({ getters: true }) });
+
+    const token = await generateToken(user.id, user.email);
+
+    console.log(token);
+
+    res.status(201).json({ user: user.toObject({ getters: true }), token });
   } catch (error) {
     return next(new HttpError(error.message, 422));
   }
